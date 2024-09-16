@@ -19,8 +19,8 @@
         async function loadModel() {
             console.log('Loading model...');
             try {
-                model = await tf.loadLayersModel('model/model.json'); // Adjust path if necessary
-                console.log('Model loaded');
+                model = await tf.loadLayersModel('model/model.json'); // Path to model.json
+                console.log('Model loaded successfully');
             } catch (error) {
                 console.error('Error loading model:', error);
             }
@@ -42,15 +42,16 @@
                 try {
                     // Preprocess the image to fit model requirements
                     const tensorImg = tf.browser.fromPixels(img)
-                        .resizeNearestNeighbor([224, 224]) // Adjust size if necessary
+                        .resizeBilinear([224, 224]) // Use resizeBilinear if model expects this resizing
                         .toFloat()
-                        .expandDims();
+                        .expandDims(0) // Add batch dimension
+                        .div(tf.scalar(255)); // Normalize if required by your model
                     
                     // Make predictions
                     const predictions = await model.predict(tensorImg).data();
                     
-                    // Process predictions (assuming you have a specific way to interpret them)
-                    document.getElementById('prediction').innerText = `Prediction: ${predictions}`;
+                    // Process and display predictions
+                    document.getElementById('prediction').innerText = `Predictions: ${predictions}`;
                 } catch (error) {
                     console.error('Error making predictions:', error);
                 }
@@ -59,4 +60,5 @@
     </script>
 </body>
 </html>
+
 
