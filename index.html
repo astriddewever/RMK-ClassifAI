@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Classifier</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
 </head>
 <body>
     <h1>Image Classifier</h1>
@@ -16,9 +15,9 @@
     <script>
         let model;
         (async function() {
-            // Load the model
+            // Load the custom model
             console.log('Loading model...');
-            model = await mobilenet.load();
+            model = await tf.loadLayersModel('model/model.json'); // Adjust path if necessary
             console.log('Model loaded');
         })();
 
@@ -29,9 +28,17 @@
 
             // Wait for the image to load
             img.onload = async () => {
-                const predictions = await model.classify(img);
-                document.getElementById('prediction').innerText = 
-                    `Prediction: ${predictions[0].className} with probability ${predictions[0].probability.toFixed(2)}`;
+                // Preprocess the image to fit model requirements
+                const tensorImg = tf.browser.fromPixels(img)
+                    .resizeNearestNeighbor([224, 224]) // Adjust size if necessary
+                    .toFloat()
+                    .expandDims();
+                
+                // Make predictions
+                const predictions = await model.predict(tensorImg).data();
+                
+                // Process predictions (assuming you have a specific way to interpret them)
+                document.getElementById('prediction').innerText = `Prediction: ${predictions}`;
             };
         });
     </script>
