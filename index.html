@@ -30,7 +30,7 @@
             img.onload = async () => {
                 // Preprocess the image to fit model requirements
                 const tensorImg = tf.browser.fromPixels(img)
-                    .resizeNearestNeighbor([1000, 1000]) 
+                    .resizeNearestNeighbor([224, 224]) 
                     .toFloat()
                     .expandDims();
                 
