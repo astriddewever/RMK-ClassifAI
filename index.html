@@ -6,6 +6,8 @@
     <title>Image Classifier</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/FileSaver.js@2.0.5/dist/FileSaver.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,16 +20,21 @@
         #results {
             margin-top: 20px;
         }
+        img {
+            max-width: 200px;
+            margin: 10px;
+        }
     </style>
 </head>
 <body>
-    <h1>RMK Image Classifier</h1>
-    <input type="file" id="image-upload" multiple>
+    <h1>Teachable Machine Image Classifier</h1>
+    <input type="file" id="image-upload" multiple accept=".jpg,.jpeg,.png">
+    <button id="download-results">Download Results</button>
     <div id="results"></div>
 
     <script>
         // Load the model
-        const URL = "https://teachablemachine.withgoogle.com/models/EKzHUSSK9/"; 
+        const URL = "URL_TO_YOUR_MODEL"; // Replace with your model URL
         let model;
 
         async function loadModel() {
@@ -42,11 +49,19 @@
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = ""; // Clear previous results
 
+            const zip = new JSZip();
+
             for (let file of files) {
                 const image = await loadImage(file);
                 const prediction = await model.predict(image);
-                displayResults(file.name, prediction);
+                await addImageToZip(file, prediction, zip);
             }
+
+            document.getElementById('download-results').addEventListener('click', () => {
+                zip.generateAsync({ type: "blob" }).then(content => {
+                    saveAs(content, "classified_images.zip");
+                });
+            });
         });
 
         function loadImage(file) {
@@ -61,24 +76,24 @@
             });
         }
 
-        function displayResults(fileName, predictions) {
-            const resultsDiv = document.getElementById('results');
-            const resultDiv = document.createElement('div');
-            resultDiv.innerHTML = `<h2>${fileName}</h2>`;
-            const img = document.createElement('img');
-            img.src = URL.createObjectURL(document.querySelector('input[type="file"]').files[0]);
-            img.width = 200;
-            resultDiv.appendChild(img);
-            predictions.forEach(prediction => {
-                const p = document.createElement('p');
-                p.textContent = `${prediction.className}: ${Math.round(prediction.probability * 100)}%`;
-                resultDiv.appendChild(p);
-            });
-            resultsDiv.appendChild(resultDiv);
+        async function addImageToZip(file, predictions, zip) {
+            const imageBlob = await fetch(URL.createObjectURL(file)).then(res => res.blob());
+            const reader = new FileReader();
+            reader.readAsDataURL(imageBlob);
+            reader.onloadend = function () {
+                const imgBase64 = reader.result;
+                const imgName = file.name;
+                const resultText = predictions.map(p => `${p.className}: ${Math.round(p.probability * 100)}%`).join("\n");
+                const resultFileName = imgName.replace(/\.[^/.]+$/, "") + "_results.txt";
+
+                zip.file(imgName, imgBase64.split(',')[1], { base64: true });
+                zip.file(resultFileName, resultText);
+            };
         }
     </script>
 </body>
 </html>
+
 
 
 
