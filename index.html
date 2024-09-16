@@ -17,6 +17,7 @@
         let model;
         (async function() {
             // Load the model
+            console.log('Loading model...');
             model = await mobilenet.load();
             console.log('Model loaded');
         })();
