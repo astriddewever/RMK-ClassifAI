@@ -18,7 +18,7 @@
             // Load the custom model
             console.log('Loading model...');
             model = await tf.loadLayersModel('model/model.json'); // Adjust path if necessary
-            console.log('Model loaded');
+            console.log('Model loaded, model is:', model );
         })();
 
         document.getElementById('file-input').addEventListener('change', async (event) => {
