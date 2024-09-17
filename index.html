@@ -53,18 +53,21 @@
             resultsDiv.innerHTML = ""; // Clear previous results
 
             const zip = new JSZip();
+            
+            // Create a folder for uncertain classifications
+            const uncertainFolder = zip.folder("Class not sure");
 
             for (let file of files) {
                 if (!file.type.startsWith("image/")) continue; // Skip non-image files
                 const image = await loadImage(file);
                 const predictions = await model.predict(image);
-                await addImageToZip(file, predictions, zip);
+                await addImageToZip(file, predictions, zip, uncertainFolder);
             }
 
             document.getElementById('download-results').addEventListener('click', () => {
                 zip.generateAsync({ type: "blob" }).then(content => {
                     saveAs(content, "classified_images.zip");
-                });
+                }).catch(error => console.error("Error generating ZIP file:", error));
             });
         });
 
