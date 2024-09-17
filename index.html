@@ -76,6 +76,7 @@
     <p id="Wait">
     When uploading >10 pictures, wait 5-10 seconds for the ML model before downloading the results.  
     </p>
+    <p id="status"> ClassifAI model is: ready for upload (blue) / busy (red) / done you can download (green)</p>
     <button id="download-results">Download results</button>
     <div id="results"></div>
 
@@ -90,6 +91,7 @@
             model = await tmImage.load(modelURL, metadataURL);
             maxPredictions = model.getTotalClasses();
             console.log("Model loaded");
+            updateStatus("ready for upload", "blue"); 
         }
 
         init();
@@ -104,12 +106,16 @@
             // Create a folder for uncertain classifications
             const uncertainFolder = zip.folder("Class not sure");
 
+            updateStatus("busy", "red"); // Update status to busy
+
             for (let file of files) {
                 if (!file.type.startsWith("image/")) continue; // Skip non-image files
                 const image = await loadImage(file);
                 const predictions = await model.predict(image);
                 await addImageToZip(file, predictions, zip, uncertainFolder);
             }
+
+            updateStatus("done, you can download", "green"); // Update status to done
 
             // Clear previous event listeners for the download button
             const downloadButton = document.getElementById('download-results');
@@ -161,6 +167,12 @@
 
             // Read the image file as data URL
             reader.readAsDataURL(file);
+        }
+
+        function updateStatus(text, color) {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = `ML classification is: ${text}`;
+            statusElement.style.color = color;
         }
     </script>
 </body>
