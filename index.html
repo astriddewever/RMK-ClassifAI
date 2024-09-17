@@ -97,7 +97,7 @@
 
             document.getElementById('download-results').addEventListener('click', () => {
                 zip.generateAsync({ type: "blob" }).then(content => {
-                    saveAs(content, "classified_images.zip");
+                    saveAs(content, "Classified Images ClassifAI.zip");
                 }).catch(error => console.error("Error generating ZIP file:", error));
             });
         });
