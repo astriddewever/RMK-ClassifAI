@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>    
     <style>
         body {
-            font-family: 'Lato', sans-serif;
+            font-family: 'Lato', sans-serif; /* Apply Lato font */
             text-align: center;
             padding: 20px;
         }
@@ -25,10 +27,22 @@
             max-width: 200px;
             margin: 10px;
         }
+        #logo {
+            max-width: 200px;
+            margin: 20px auto;
+        }
+        #description {
+            margin: 20px auto;
+            max-width: 800px;
+        }
     </style>
 </head>
 <body>
     <h1>Teachable Machine Image Classifier</h1>
+    <img id="logo" src="https://www.rmk.be/wp-content/uploads/2018/09/RMK_WEB_LOGO_nav-01.png" alt="RMK Logo">
+    <p id="description">
+        This tool uses a machine learning model trained with Teachable Machine to classify images based on pre-defined categories. Upload your images, and the tool will predict and classify them into one of the categories or mark them as uncertain if the prediction confidence is low. You can then download a ZIP file containing your classified images and their associated results.
+    </p>
     <input type="file" id="image-upload" multiple accept=".jpg,.jpeg,.png">
     <button id="download-results">Download resultaten</button>
     <div id="results"></div>
