@@ -95,7 +95,7 @@
                 const topPrediction = predictions.reduce((max, p) => p.probability > max.probability ? p : max, { probability: 0 });
 
                 let folderName;
-                if (topPrediction.probability > 0.50) {
+                if (topPrediction.probability > 0.60) {
                     folderName = topPrediction.className;
                 } else {
                     folderName = "Class not sure";
@@ -104,9 +104,8 @@
                 // Create or get the appropriate folder
                 let folder = zip.folder(folderName);
 
-                // Add image and results to the corresponding folder
+                // Add image to the corresponding folder
                 folder.file(imgName, imgBase64, { base64: true });
-                folder.file(resultFileName, resultText);
             };
 
             // Read the image file as data URL
