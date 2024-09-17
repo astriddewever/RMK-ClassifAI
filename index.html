@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Classifier</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@1.0.0/dist/teachablemachine.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/FileSaver.js@2.0.5/dist/FileSaver.min.js"></script>
     <style>
@@ -38,6 +38,7 @@
         let model;
 
         async function loadModel() {
+            console.log("Loading Model")
             model = await tmImage.load(URL + "model.json", URL + "metadata.json");
             console.log("Model loaded");
         }
