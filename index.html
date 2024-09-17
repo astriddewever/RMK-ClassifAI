@@ -30,6 +30,9 @@
             border-radius: 5px; 
             cursor: pointer; 
         }
+        label:hover {
+            background-color: #cecece; /* Darker green on hover */
+        }
         button {
             font-size: 18px;
             padding: 10px 20px;
@@ -68,7 +71,6 @@
     
     <label for="image-upload">Bestanden kiezen</label>
     <input type="file" id="image-upload" multiple accept=".jpg,.jpeg,.png">
-    <div id="file-name">Nog geen bestanden gekozen</div>
     <br>
     <button id="download-results">Download Results</button>
     <div id="results"></div>
