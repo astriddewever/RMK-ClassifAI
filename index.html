@@ -11,6 +11,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.3/dist/teachablemachine-image.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>    
+
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    
     <style>
         body {
             font-family: 'Lato', sans-serif; 
@@ -35,6 +39,16 @@
             margin: 20px auto;
             max-width: 800px;
         }
+        .swiper-container {
+            width: 100%;
+            height: 300px;
+            margin: 20px auto;
+        }
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
@@ -44,6 +58,18 @@
         This tool uses a machine learning model trained with Google's Teachable Machine to classify RMK's images based on the predefined categories. Upload your images, and the tool will predict and classify them into one of the categories or mark them as uncertain if the prediction confidence is low. You can then download a ZIP file containing your classified images.
     </p>
     <input type="file" id="image-upload" multiple accept=".jpg,.jpeg,.png">
+
+    <!-- Swiper Container for Carousel -->
+    <div class="swiper-container" id="carousel">
+        <div class="swiper-wrapper"></div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination"></div>
+        <!-- Add Navigation -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+
+    
     <button id="download-results">Download resultaten</button>
     <div id="results"></div>
 
