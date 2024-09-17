@@ -100,6 +100,8 @@
             // Create a folder for uncertain classifications
             const uncertainFolder = zip.folder("Class not sure");
 
+            let imageCount = 0;
+
             for (let file of files) {
                 if (!file.type.startsWith("image/")) continue; // Skip non-image files
                 const image = await loadImage(file);
@@ -113,22 +115,26 @@
                     slide.className = 'swiper-slide';
                     slide.innerHTML = `<img src="${e.target.result}" alt="${file.name}">`;
                     swiperWrapper.appendChild(slide);
+                    
+                    imageCount++;
+                    
+                    // Initialize Swiper after adding all slides
+                    if (imageCount === files.length) {
+                        new Swiper('.swiper-container', {
+                            loop: true,
+                            pagination: {
+                                el: '.swiper-pagination',
+                                clickable: true,
+                            },
+                            navigation: {
+                                nextEl: '.swiper-button-next',
+                                prevEl: '.swiper-button-prev',
+                            },
+                        });
+                    }
                 };
                 reader.readAsDataURL(file);
             }
-
-            // Initialize Swiper after adding images
-            new Swiper('.swiper-container', {
-                loop: true,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-            });
 
             // Clear previous event listeners for the download button
             const downloadButton = document.getElementById('download-results');
@@ -184,4 +190,3 @@
     </script>
 </body>
 </html>
-
