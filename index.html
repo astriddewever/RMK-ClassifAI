@@ -65,7 +65,10 @@
     <p id="description">
         This tool uses a machine learning model trained with Google's Teachable Machine to classify images based on pre-defined categories. Upload your images, and the tool will predict and classify them into one of the categories or mark them as uncertain if the prediction confidence is low. You can then download a ZIP file containing your classified images.
     </p>
+    
+    <label for="image-upload">Bestanden kiezen</label>
     <input type="file" id="image-upload" multiple accept=".jpg,.jpeg,.png">
+    <div id="file-name">Nog geen bestanden gekozen</div>
     <br>
     <button id="download-results">Download Results</button>
     <div id="results"></div>
