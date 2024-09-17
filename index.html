@@ -64,6 +64,10 @@
                 await addImageToZip(file, predictions, zip, uncertainFolder);
             }
 
+            // Clear previous event listeners for the download button
+            const downloadButton = document.getElementById('download-results');
+            downloadButton.replaceWith(downloadButton.cloneNode(true));
+
             document.getElementById('download-results').addEventListener('click', () => {
                 zip.generateAsync({ type: "blob" }).then(content => {
                     saveAs(content, "classified_images.zip");
