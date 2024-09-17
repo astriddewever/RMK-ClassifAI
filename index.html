@@ -33,21 +33,17 @@
     <div id="results"></div>
 
     <script>
-        // Load the model
-        const URL = "https://teachablemachine.withgoogle.com/models/EKzHUSSK9/"; 
-        let model, labelContainer, maxPredictions;
+        const URL = "https://teachablemachine.withgoogle.com/models/EKzHUSSK9/";
+        let model, maxPredictions;
 
-            // Load the image model and setup the webcam
         async function init() {
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
     
-            // load the model and metadata
-            // Note: the pose library adds "tmImage" object to your window (window.tmImage)
             model = await tmImage.load(modelURL, metadataURL);
             maxPredictions = model.getTotalClasses();
+            console.log("Model loaded");
         }
-        
 
         init();
 
@@ -59,9 +55,10 @@
             const zip = new JSZip();
 
             for (let file of files) {
+                if (!file.type.startsWith("image/")) continue; // Skip non-image files
                 const image = await loadImage(file);
-                const prediction = await model.predict(image);
-                await addImageToZip(file, prediction, zip);
+                const predictions = await model.predict(image);
+                await addImageToZip(file, predictions, zip);
             }
 
             document.getElementById('download-results').addEventListener('click', () => {
@@ -90,21 +87,15 @@
                 const imgName = file.name;
                 const resultText = predictions.map(p => `${p.className}: ${Math.round(p.probability * 100)}%`).join("\n");
                 const resultFileName = imgName.replace(/\.[^/.]+$/, "") + "_results.txt";
-        
+
                 // Add image and results to ZIP
                 zip.file(imgName, imgBase64, { base64: true });
                 zip.file(resultFileName, resultText);
             };
-            
+
             // Read the image file as data URL
             reader.readAsDataURL(file);
         }
-
     </script>
 </body>
 </html>
-
-
-
-
-
