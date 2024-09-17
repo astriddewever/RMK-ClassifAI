@@ -58,6 +58,7 @@
     <p id="description">
         This tool uses a machine learning model trained with Google's Teachable Machine to classify RMK's images based on the predefined categories. Upload your images, and the tool will predict and classify them into one of the categories or mark them as uncertain if the prediction confidence is low. You can then download a ZIP file containing your classified images.
     </p>
+    const swiperWrapper = document.querySelector('.swiper-wrapper');
     <input type="file" id="image-upload" multiple accept=".jpg,.jpeg,.png">
 
     <!-- Swiper Container for Carousel -->
@@ -136,9 +137,12 @@
                 reader.readAsDataURL(file);
             }
 
-            // Clear previous event listeners for the download button
             const downloadButton = document.getElementById('download-results');
-            downloadButton.replaceWith(downloadButton.cloneNode(true));
+            downloadButton.addEventListener('click', () => {
+                zip.generateAsync({ type: "blob" }).then(content => {
+                    saveAs(content, "classified_images.zip");
+                }).catch(error => console.error("Error generating ZIP file:", error));
+            });
 
             document.getElementById('download-results').addEventListener('click', () => {
                 zip.generateAsync({ type: "blob" }).then(content => {
