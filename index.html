@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Classifier</title>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.3/dist/teachablemachine-image.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>    
- 
     <style>
-        body { 
-            font-family: 'Lato', sans-serif; 
+        body {
+            font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
         }
@@ -26,25 +24,12 @@
             max-width: 200px;
             margin: 10px;
         }
-        #logo {
-            max-width: 150px;
-            margin: 20px auto;
-        }
-        #description {
-            margin: 20px auto;
-            max-width: 800px;
-        }
     </style>
 </head>
 <body>
-    <img id="logo" src="https://www.rmk.be/wp-content/uploads/2018/09/RMK_WEB_LOGO_nav-01.png" alt="RMK Logo">
-    <h1>Marketing ClassifAI</h1>
-    <p id="description">
-        This tool uses a machine learning model trained with Google's Teachable Machine to classify RMK's images based on the predefined categories. Upload your images, and the tool will predict and classify them into one of the categories or mark them as uncertain if the prediction confidence is low. You can then download a ZIP file containing your classified images.
-    </p>
+    <h1>Teachable Machine Image Classifier</h1>
     <input type="file" id="image-upload" multiple accept=".jpg,.jpeg,.png">
-
-    <button id="download-results">Download resultaten</button>
+    <button id="download-results">Download Results</button>
     <div id="results"></div>
 
     <script>
@@ -68,6 +53,8 @@
             resultsDiv.innerHTML = ""; // Clear previous results
 
             const zip = new JSZip();
+            
+            // Create a folder for uncertain classifications
             const uncertainFolder = zip.folder("Class not sure");
 
             for (let file of files) {
@@ -75,18 +62,8 @@
                 const image = await loadImage(file);
                 const predictions = await model.predict(image);
                 await addImageToZip(file, predictions, zip, uncertainFolder);
-
-                // Display image with results
-                const imgElement = document.createElement('img');
-                imgElement.src = window.URL.createObjectURL(file);
-                imgElement.alt = file.name;
-                const resultText = document.createElement('p');
-                resultText.textContent = predictions.map(p => `${p.className}: ${Math.round(p.probability * 100)}%`).join(", ");
-                resultsDiv.appendChild(imgElement);
-                resultsDiv.appendChild(resultText);
             }
 
-            // Attach event listener to the download button
             document.getElementById('download-results').addEventListener('click', () => {
                 zip.generateAsync({ type: "blob" }).then(content => {
                     saveAs(content, "classified_images.zip");
@@ -111,12 +88,14 @@
             reader.onloadend = function () {
                 const imgBase64 = reader.result.split(',')[1]; // Extract base64 part of the image data URL
                 const imgName = file.name;
+                const resultText = predictions.map(p => `${p.className}: ${Math.round(p.probability * 100)}%`).join("\n");
+                const resultFileName = imgName.replace(/\.[^/.]+$/, "") + "_results.txt";
 
                 // Find the prediction with the highest probability
                 const topPrediction = predictions.reduce((max, p) => p.probability > max.probability ? p : max, { probability: 0 });
 
                 let folderName;
-                if (topPrediction.probability > 0.60) {
+                if (topPrediction.probability > 0.50) {
                     folderName = topPrediction.className;
                 } else {
                     folderName = "Class not sure";
@@ -125,8 +104,9 @@
                 // Create or get the appropriate folder
                 let folder = zip.folder(folderName);
 
-                // Add image to the corresponding folder
+                // Add image and results to the corresponding folder
                 folder.file(imgName, imgBase64, { base64: true });
+                folder.file(resultFileName, resultText);
             };
 
             // Read the image file as data URL
