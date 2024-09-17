@@ -78,7 +78,7 @@
 
                 // Display image with results
                 const imgElement = document.createElement('img');
-                imgElement.src = URL.createObjectURL(file);
+                imgElement.src = window.URL.createObjectURL(file);
                 imgElement.alt = file.name;
                 const resultText = document.createElement('p');
                 resultText.textContent = predictions.map(p => `${p.className}: ${Math.round(p.probability * 100)}%`).join(", ");
