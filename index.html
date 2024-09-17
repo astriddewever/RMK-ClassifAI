@@ -37,10 +37,10 @@
     </style>
 </head>
 <body>
-    <h1>Teachable Machine Image Classifier</h1>
     <img id="logo" src="https://www.rmk.be/wp-content/uploads/2018/09/RMK_WEB_LOGO_nav-01.png" alt="RMK Logo">
+    <h1>RMK's ClassifAI </h1>
     <p id="description">
-        This tool uses a machine learning model trained with Teachable Machine to classify images based on pre-defined categories. Upload your images, and the tool will predict and classify them into one of the categories or mark them as uncertain if the prediction confidence is low. You can then download a ZIP file containing your classified images and their associated results.
+        This tool uses a machine learning model trained with Google's Teachable Machine to classify images based on pre-defined categories. Upload your images, and the tool will predict and classify them into one of the categories or mark them as uncertain if the prediction confidence is low. You can then download a ZIP file containing your classified images.
     </p>
     <input type="file" id="image-upload" multiple accept=".jpg,.jpeg,.png">
     <button id="download-results">Download Results</button>
@@ -122,9 +122,8 @@
                 // Create or get the appropriate folder
                 let folder = zip.folder(folderName);
 
-                // Add image and results to the corresponding folder
+                // Add image to the corresponding folder
                 folder.file(imgName, imgBase64, { base64: true });
-                folder.file(resultFileName, resultText);
             };
 
             // Read the image file as data URL
