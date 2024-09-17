@@ -10,17 +10,11 @@
     <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/file-saver@2.0.5/dist/FileSaver.min.js"></script>    
 
-    <!-- Include Swiper CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-    
-    <!-- Include Swiper JS -->
-    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-    
     <style>
         body {
             font-family: 'Lato', sans-serif; 
             text-align: center;
-            padding: 20px;  
+            padding: 20px;
         }
         input[type="file"] {
             margin: 20px;
@@ -40,16 +34,6 @@
             margin: 20px auto;
             max-width: 800px;
         }
-        .swiper-container {
-            width: 100%;
-            height: 300px;
-            margin: 20px auto;
-        }
-        .swiper-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
     </style>
 </head>
 <body>
@@ -59,16 +43,6 @@
         This tool uses a machine learning model trained with Google's Teachable Machine to classify RMK's images based on the predefined categories. Upload your images, and the tool will predict and classify them into one of the categories or mark them as uncertain if the prediction confidence is low. You can then download a ZIP file containing your classified images.
     </p>
     <input type="file" id="image-upload" multiple accept=".jpg,.jpeg,.png">
-
-    <!-- Swiper Container for Carousel -->
-    <div class="swiper-container" id="carousel">
-        <div class="swiper-wrapper"></div>
-        <!-- Add Pagination -->
-        <div class="swiper-pagination"></div>
-        <!-- Add Navigation -->
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-    </div>
 
     <button id="download-results">Download resultaten</button>
     <div id="results"></div>
@@ -80,7 +54,7 @@
         async function init() {
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
-
+    
             model = await tmImage.load(modelURL, metadataURL);
             maxPredictions = model.getTotalClasses();
             console.log("Model loaded");
@@ -91,16 +65,10 @@
         document.getElementById('image-upload').addEventListener('change', async (event) => {
             const files = event.target.files;
             const resultsDiv = document.getElementById('results');
-            const swiperWrapper = document.querySelector('.swiper-wrapper');
             resultsDiv.innerHTML = ""; // Clear previous results
-            swiperWrapper.innerHTML = ""; // Clear previous carousel slides
 
             const zip = new JSZip();
-            
-            // Create a folder for uncertain classifications
             const uncertainFolder = zip.folder("Class not sure");
-
-            let imageCount = 0;
 
             for (let file of files) {
                 if (!file.type.startsWith("image/")) continue; // Skip non-image files
@@ -108,32 +76,14 @@
                 const predictions = await model.predict(image);
                 await addImageToZip(file, predictions, zip, uncertainFolder);
 
-                // Add image to carousel
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const slide = document.createElement('div');
-                    slide.className = 'swiper-slide';
-                    slide.innerHTML = `<img src="${e.target.result}" alt="${file.name}">`;
-                    swiperWrapper.appendChild(slide);
-
-                    imageCount++;
-
-                    // Initialize Swiper after adding all slides
-                    if (imageCount === files.length) {
-                        new Swiper('.swiper-container', {
-                            loop: true,
-                            pagination: {
-                                el: '.swiper-pagination',
-                                clickable: true,
-                            },
-                            navigation: {
-                                nextEl: '.swiper-button-next',
-                                prevEl: '.swiper-button-prev',
-                            },
-                        });
-                    }
-                };
-                reader.readAsDataURL(file);
+                // Display image with results
+                const imgElement = document.createElement('img');
+                imgElement.src = URL.createObjectURL(file);
+                imgElement.alt = file.name;
+                const resultText = document.createElement('p');
+                resultText.textContent = predictions.map(p => `${p.className}: ${Math.round(p.probability * 100)}%`).join(", ");
+                resultsDiv.appendChild(imgElement);
+                resultsDiv.appendChild(resultText);
             }
 
             // Attach event listener to the download button
@@ -161,8 +111,6 @@
             reader.onloadend = function () {
                 const imgBase64 = reader.result.split(',')[1]; // Extract base64 part of the image data URL
                 const imgName = file.name;
-                const resultText = predictions.map(p => `${p.className}: ${Math.round(p.probability * 100)}%`).join("\n");
-                const resultFileName = imgName.replace(/\.[^/.]+$/, "") + "_results.txt";
 
                 // Find the prediction with the highest probability
                 const topPrediction = predictions.reduce((max, p) => p.probability > max.probability ? p : max, { probability: 0 });
