@@ -84,19 +84,22 @@
         }
 
         async function addImageToZip(file, predictions, zip) {
-            const imageBlob = await fetch(URL.createObjectURL(file)).then(res => res.blob());
             const reader = new FileReader();
-            reader.readAsDataURL(imageBlob);
             reader.onloadend = function () {
-                const imgBase64 = reader.result;
+                const imgBase64 = reader.result.split(',')[1]; // Extract base64 part of the image data URL
                 const imgName = file.name;
                 const resultText = predictions.map(p => `${p.className}: ${Math.round(p.probability * 100)}%`).join("\n");
                 const resultFileName = imgName.replace(/\.[^/.]+$/, "") + "_results.txt";
-
-                zip.file(imgName, imgBase64.split(',')[1], { base64: true });
+        
+                // Add image and results to ZIP
+                zip.file(imgName, imgBase64, { base64: true });
                 zip.file(resultFileName, resultText);
             };
+            
+            // Read the image file as data URL
+            reader.readAsDataURL(file);
         }
+
     </script>
 </body>
 </html>
